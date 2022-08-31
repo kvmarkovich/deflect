@@ -60,3 +60,6 @@ input/legacy-filebeat/
 
 # edgemanage
 containers/edgemanage/edgemanage.yaml
+
+.idea
+*.iml

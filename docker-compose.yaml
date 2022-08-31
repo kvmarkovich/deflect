@@ -2,15 +2,16 @@ version: '3.4'
 services:
     origin-server:
       build:
-        context: ./containers/origin-server
+        context: ./containers/test-origin
+        # context: ./containers/origin-server
         dockerfile: Dockerfile
       network_mode: "service:nginx"  # nginx connects to this at localhost:8080
-      # ports:
-      #   - "8080:8080"
+      #ports:
+        #- "8080:8080"
 
     nginx:
       build:
-        context: ./containers/edge/nginx
+        context: ./containers/nginx
         dockerfile: Dockerfile
       ports:
         - "80:80"
@@ -18,11 +19,17 @@ services:
 
     banjax:
       build:
-        context: ./containers/edge/banjax
+        context: ./containers/banjax
         dockerfile: Dockerfile
       network_mode: "service:nginx"  # nginx connects to this at localhost:8081
       cap_add:
         - NET_ADMIN
+      volumes:
+        - ./containers/banjax/banjax-config.yaml:/etc/banjax/banjax-config.yaml
+#        - ./containers/banjax/caroot.pem:/etc/banjax/caroot.pem
+#        - ./containers/banjax/localhost.key:/etc/banjax/key.pem
+#        - ./containers/banjax/localhost.crt:/etc/banjax/certificate.pem
+#        - ./localhost.pem:/etc/banjax/certificate.pem
 
     zookeeper:
       image: wurstmeister/zookeeper
@@ -33,7 +40,7 @@ services:
 
     kafka-server:
       build:
-        context: ./containers/kafka-server
+        context: ./containers/kafka
         dockerfile: Dockerfile
       ports:
         - "9092:9092"
@@ -51,20 +58,20 @@ services:
     # XXX `docker-compose up --build purge-plugin-builder` needlessly builds `auth-server` even though it doesn't depend on it. dunno why.
     purge-plugin-builder:
       build:
-        context: ./containers/edge/nginx
+        context: ./containers/nginx
         dockerfile: Dockerfile
         target: purge-plugin-build-target
 
     bind-server:
       build:
-        context: ./containers/controller/bind-server
+        context: ./containers/bind
         dockerfile: Dockerfile
       ports:
         - "53:53/udp"
 
     certbot:
       build:
-        context: ./containers/controller/certbot
+        context: ./containers/certbot
         dockerfile: Dockerfile
       network_mode: "service:bind-server"  # bind9 connects to this at localhost:5053
 

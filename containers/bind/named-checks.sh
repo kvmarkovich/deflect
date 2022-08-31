@@ -12,7 +12,7 @@ NAMEDCONF="/etc/bind/named.conf"
 ZONEBASE="/etc/bind/deflect"
 
 # Command Path for named- commands
-COMPATH="/usr/sbin/"
+COMPATH="/usr/bin/"
 
 #CHROOT location if applicable, if not just use null definition
 CHROOT=""

@@ -31,7 +31,8 @@ def kill_containers_with_label(client, label, logger):
         filters={'name': label}
     )
     for container in containers1 + containers2:
-        logger.info(f"killing {container} with label or name {label}")
+        name = container.name
+        logger.info(f"killing {name} with label or name {label}")
         # XXX ugh all of this
         try:
             container.kill()

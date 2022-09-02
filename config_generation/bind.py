@@ -264,17 +264,26 @@ def template_named_conf(config, client_and_system_sites):
     recursion no;
 """
 
+    named_conf_string += """
+    // start system_root_zone
+    """
+    zone_ = config['system_root_zone']
     named_conf_string += zone_block_root(
-            config['system_root_zone'],
+            zone_,
             indent=" "*4,
             config=config
     )
+    named_conf_string += """
+    // end system_root_zone
+    """
 
     named_conf_acme = ''
     for site in sorted(client_and_system_sites.values(), key=lambda s: s['public_domain']):
-        named_conf_string += zone_block_root(site['public_domain'], indent=" "*4, config=config)
-        for server_name in sorted(set(site['server_names'])):
-            named_conf_acme += zone_block_acme_challenge(server_name, indent=" "*4)
+        public_domain_ = site['public_domain']
+        if public_domain_ != zone_:
+            named_conf_string += zone_block_root(public_domain_, indent=" " * 4, config=config)
+            for server_name in sorted(set(site['server_names'])):
+                named_conf_acme += zone_block_acme_challenge(server_name, indent=" "*4)
 
     named_conf_string += named_conf_acme + "};\n"
 
